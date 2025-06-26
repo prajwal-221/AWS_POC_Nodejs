@@ -15,12 +15,12 @@ phases:
   pre_build:
     commands:
       - echo "🟡 Logging into CodeArtifact..."
-      - |
-        aws codeartifact login --tool npm \
-          --domain ledgerlink-domain \
-          --domain-owner 273491477087 \
-          --repository ledgerlink \
-          --region us-east-1
+      - >
+        aws codeartifact login --tool npm
+        --domain ledgerlink-domain
+        --domain-owner 273491477087
+        --repository ledgerlink
+        --region us-east-1
 
       - echo "🔍 Determining version type..."
       - VERSION_TYPE=${VERSION_TYPE:-$DEFAULT_VERSION_TYPE}
