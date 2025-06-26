@@ -1,9 +1,7 @@
 version: 0.2
-
 env:
   variables:
     DEFAULT_VERSION_TYPE: "minor"
-
 phases:
   install:
     runtime-versions:
@@ -11,24 +9,19 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - npm ci
-
   pre_build:
     commands:
       - echo "Logging into CodeArtifact..."
       - aws codeartifact login --tool npm --domain ledgerlink-domain --domain-owner 273491477087 --repository ledgerlink --region us-east-1
-
       - echo "Determining version type..."
-      - "export VERSION_TYPE=${VERSION_TYPE:-$DEFAULT_VERSION_TYPE}"  # Wrapped in quotes
+      - export VERSION_TYPE=${VERSION_TYPE:-$DEFAULT_VERSION_TYPE}
       - echo "Final VERSION_TYPE being used: $VERSION_TYPE"
-
       - echo "Bumping $VERSION_TYPE version..."
       - npm version $VERSION_TYPE --no-git-tag-version
-
   build:
     commands:
       - echo "Publishing to CodeArtifact..."
       - npm publish
-
 artifacts:
   files:
     - '**/*'
