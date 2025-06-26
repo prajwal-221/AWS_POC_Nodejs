@@ -15,7 +15,8 @@ phases:
   pre_build:
     commands:
       - echo "🟡 Logging into CodeArtifact..."
-      - aws codeartifact login --tool npm \
+      - |
+        aws codeartifact login --tool npm \
           --domain ledgerlink-domain \
           --domain-owner 273491477087 \
           --repository ledgerlink \
