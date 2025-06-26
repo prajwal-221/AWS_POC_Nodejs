@@ -5,7 +5,6 @@ env:
     DEFAULT_VERSION_TYPE: "minor"
 
 phases:
-
   install:
     runtime-versions:
       nodejs: 18
@@ -16,17 +15,13 @@ phases:
   pre_build:
     commands:
       - echo "Logging into CodeArtifact…"
-      - aws codeartifact login --tool npm --domain ledgerlink-domain \
-          --domain-owner 273491477087 \
-          --repository ledgerlink --region us-east-1
+      - aws codeartifact login --tool npm --domain ledgerlink-domain --domain-owner 273491477087 --repository ledgerlink --region us-east-1
 
       - echo "Determining bump type…"
-      # this will be either the pipeline override, or “minor” by default
       - export FINAL_VERSION_TYPE=${VERSION_TYPE:-$DEFAULT_VERSION_TYPE}
       - echo "→ FINAL_VERSION_TYPE = $FINAL_VERSION_TYPE"
 
-      - echo "Bumping package.json…"
-      # bump the version: major, minor or patch
+      - echo "Bumping version…"
       - npm version "$FINAL_VERSION_TYPE" --no-git-tag-version
 
   build:
