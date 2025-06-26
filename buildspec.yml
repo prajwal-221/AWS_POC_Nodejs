@@ -9,20 +9,34 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - echo "Installing dependencies…"
-      - npm install
+      - echo "Installing dependencies..."
+      - npm ci
 
   pre_build:
     commands:
-      - echo "Logging into CodeArtifact…"
+      - echo "Logging into CodeArtifact..."
       - aws codeartifact login --tool npm --domain ledgerlink-domain --domain-owner 273491477087 --repository ledgerlink --region us-east-1
 
-      - echo "Determining bump type…"
-      - export FINAL_VERSION_TYPE=${VERSION_TYPE:-$DEFAULT_VERSION_TYPE}
-      - echo "→ FINAL_VERSION_TYPE = $FINAL_VERSION_TYPE"
-
-      - echo "Bumping version…"
+      - echo "Determining version type..."
+      - echo "VERSION_TYPE from environment: $VERSION_TYPE"
+      - echo "DEFAULT_VERSION_TYPE: $DEFAULT_VERSION_TYPE"
+      - |
+        if [ -z "$VERSION_TYPE" ] || [ "$VERSION_TYPE" = "#{pipelineVariables.VERSION_TYPE}" ]; then
+          export FINAL_VERSION_TYPE="$DEFAULT_VERSION_TYPE"
+          echo "Using default version type: $FINAL_VERSION_TYPE"
+        else
+          export FINAL_VERSION_TYPE="$VERSION_TYPE"
+          echo "Using pipeline version type: $FINAL_VERSION_TYPE"
+        fi
+      
+      - echo "Current package version:"
+      - npm version --json
+      
+      - echo "Bumping $FINAL_VERSION_TYPE version..."
       - npm version "$FINAL_VERSION_TYPE" --no-git-tag-version
+      
+      - echo "New package version:"
+      - npm version --json
 
   build:
     commands:
