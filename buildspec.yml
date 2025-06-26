@@ -18,13 +18,10 @@ phases:
       - "aws codeartifact login --tool npm --domain ledgerlink-domain --domain-owner 273491477087 --repository ledgerlink --region us-east-1"
       - "echo 'Environment Variables Debug:'"
       - "echo 'VERSION_TYPE from pipeline:' \"$VERSION_TYPE\""
-      - "echo 'CODEBUILD_WEBHOOK_HEAD_REF:' \"$CODEBUILD_WEBHOOK_HEAD_REF\""
-      - "echo 'All environment variables:'"
-      - "printenv | sort"
       - "echo 'DEFAULT_VERSION_TYPE:' \"$DEFAULT_VERSION_TYPE\""
       - "echo 'Determining final version type...'"
       - |
-        if [ -n "$VERSION_TYPE" ] && [ "$VERSION_TYPE" != "" ]; then 
+        if [ -n "$VERSION_TYPE" ] && [[ "$VERSION_TYPE" =~ ^(major|minor|patch)$ ]]; then 
           FINAL_VERSION_TYPE="$VERSION_TYPE"; 
         else 
           FINAL_VERSION_TYPE="$DEFAULT_VERSION_TYPE"; 
