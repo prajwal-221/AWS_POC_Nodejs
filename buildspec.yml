@@ -19,6 +19,8 @@ phases:
       - "echo 'Environment Variables Debug:'"
       - "echo 'VERSION_TYPE from pipeline:' \"$VERSION_TYPE\""
       - "echo 'DEFAULT_VERSION_TYPE:' \"$DEFAULT_VERSION_TYPE\""
+      - "echo 'All environment variables:'"
+      - "printenv | sort"  # Print all environment variables for debugging
       - "echo 'Determining final version type...'"
       - |
         if [ -n "$VERSION_TYPE" ] && [[ "$VERSION_TYPE" =~ ^(major|minor|patch)$ ]]; then 
