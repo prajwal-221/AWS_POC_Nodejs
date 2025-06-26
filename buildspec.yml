@@ -8,16 +8,22 @@ phases:
       nodejs: 18
     commands:
       - "echo 'Installing dependencies...'"
-      - "npm install"
+      - "npm ci"
   pre_build:
     commands:
       - "echo 'Logging into CodeArtifact...'"
       - "aws codeartifact login --tool npm --domain ledgerlink-domain --domain-owner 273491477087 --repository ledgerlink --region us-east-1"
       - "echo 'Determining version type...'"
       - "export VERSION_TYPE=${VERSION_TYPE:-$DEFAULT_VERSION_TYPE}"
-      - "echo 'Final VERSION_TYPE being used: $VERSION_TYPE'"
-      - "echo 'Bumping $VERSION_TYPE version...'"
-      - "npm version $VERSION_TYPE --no-git-tag-version"
+      - "echo 'Final VERSION_TYPE being used:' $VERSION_TYPE"
+      - "echo 'Getting current published version from CodeArtifact...'"
+      - "CURRENT_VERSION=$(npm view @ledgerlink/hello-world-lib version 2>/dev/null || echo '1.0.0')"
+      - "echo 'Current published version:' $CURRENT_VERSION"
+      - "echo 'Setting package.json to current published version...'"
+      - "npm version $CURRENT_VERSION --no-git-tag-version --allow-same-version"
+      - "echo 'Bumping' $VERSION_TYPE 'version...'"
+      - "NEW_VERSION=$(npm version $VERSION_TYPE --no-git-tag-version)"
+      - "echo 'New version to be published:' $NEW_VERSION"
   build:
     commands:
       - "echo 'Publishing to CodeArtifact...'"
