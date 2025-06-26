@@ -1,0 +1,11 @@
+{
+  "name": "@ledgerlink/hello-world-lib",
+  "version": "1.0.0",
+  "description": "A simple Hello World library",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Prajwal",
+  "license": "MIT"
+}
