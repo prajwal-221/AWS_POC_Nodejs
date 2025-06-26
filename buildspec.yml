@@ -18,7 +18,7 @@ phases:
       - aws codeartifact login --tool npm --domain ledgerlink-domain --domain-owner 273491477087 --repository ledgerlink --region us-east-1
 
       - echo "Determining version type..."
-      - export VERSION_TYPE=${VERSION_TYPE:-$DEFAULT_VERSION_TYPE}
+      - "export VERSION_TYPE=${VERSION_TYPE:-$DEFAULT_VERSION_TYPE}"  # Wrapped in quotes
       - echo "Final VERSION_TYPE being used: $VERSION_TYPE"
 
       - echo "Bumping $VERSION_TYPE version..."
