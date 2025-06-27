@@ -9,39 +9,49 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - "echo 'Installing dependencies...'"
-      - "npm install"
+      - set -e
+      - echo "Installing dependencies..."
+      - npm install
 
   pre_build:
     commands:
-      - "echo 'Logging into CodeArtifact...'"
-      - "aws codeartifact login --tool npm --domain ledgerlink-domain --domain-owner 273491477087 --repository ledgerlink --region us-east-1"
-      - "echo 'Environment Variables Debug:'"
-      - "echo 'VERSION_TYPE from pipeline:' \"$VERSION_TYPE\""
-      - "echo 'DEFAULT_VERSION_TYPE:' \"$DEFAULT_VERSION_TYPE\""
-      - "echo 'All environment variables:'"
-      - "printenv | sort"  # Print all environment variables for debugging
-      - "echo 'Determining final version type...'"
+      - set -e
+      - echo "Logging into CodeArtifact..."
+      - aws codeartifact login \
+          --tool npm \
+          --domain ledgerlink-domain \
+          --domain-owner 273491477087 \
+          --repository ledgerlink \
+          --region us-east-1
+
       - |
-        if [ -n "$VERSION_TYPE" ] && [[ "$VERSION_TYPE" =~ ^(major|minor|patch)$ ]]; then 
-          FINAL_VERSION_TYPE="$VERSION_TYPE"; 
-        else 
-          FINAL_VERSION_TYPE="$DEFAULT_VERSION_TYPE"; 
+        # Determine which version type to bump
+        if [ -n "$VERSION_TYPE" ] && [[ "$VERSION_TYPE" =~ ^(major|minor|patch)$ ]]; then
+          FINAL_VERSION_TYPE="$VERSION_TYPE"
+        else
+          FINAL_VERSION_TYPE="$DEFAULT_VERSION_TYPE"
         fi
-      - "echo 'Final VERSION_TYPE being used:' \"$FINAL_VERSION_TYPE\""
-      - "echo 'Getting current published version from CodeArtifact...'"
-      - "CURRENT_VERSION=$(npm view @ledgerlink/hello-world-lib version 2>/dev/null || echo '1.0.0')"
-      - "echo 'Current published version:' $CURRENT_VERSION"
-      - "echo 'Setting package.json to current published version...'"
-      - "npm version $CURRENT_VERSION --no-git-tag-version --allow-same-version"
-      - "echo 'Bumping' $FINAL_VERSION_TYPE 'version...'"
-      - "NEW_VERSION=$(npm version $FINAL_VERSION_TYPE --no-git-tag-version)"
-      - "echo 'New version to be published:' $NEW_VERSION"
+      - echo "Final version type: $FINAL_VERSION_TYPE"
+
+      # --- Intentional error added below ---
+      - nmp version  # <-- typo: should be 'npm version' (this line will fail)
+
+      - |
+        # Get current version or default to 1.0.0
+        CURRENT_VERSION=$(npm view @ledgerlink/hello-world-lib version 2>/dev/null || echo "1.0.0")
+      - echo "Current version: $CURRENT_VERSION"
+
+      - echo "Syncing package.json to current version..."
+      - npm version "$CURRENT_VERSION" --no-git-tag-version --allow-same-version
+
+      - echo "Bumping $FINAL_VERSION_TYPE version..."
+      - NEW_VERSION=$(npm version "$FINAL_VERSION_TYPE" --no-git-tag-version)
+      - echo "New version: $NEW_VERSION"
 
   build:
     commands:
-      - "echo 'Publishing to CodeArtifact...'"
-      - "npm publish"
+      - echo "Publishing to CodeArtifact..."
+      - npm publish
 
 artifacts:
   files:
