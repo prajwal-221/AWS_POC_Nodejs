@@ -21,7 +21,7 @@ phases:
       - "if [ -n \"$VERSION_TYPE\" ] && [[ \"$VERSION_TYPE\" =~ ^(major|minor|patch)$ ]]; then FINAL_VERSION_TYPE=\"$VERSION_TYPE\"; else FINAL_VERSION_TYPE=\"$DEFAULT_VERSION_TYPE\"; fi"
       - "echo \"Final version type: $FINAL_VERSION_TYPE\""
       # --- Intentional error added below ---
-      - "nmp version"  # typo: should be 'npm version' – this line will fail and halt the pipeline
+      - "npm version"  # typo: should be 'npm version' – this line will fail and halt the pipeline
       - "CURRENT_VERSION=$(npm view @ledgerlink/hello-world-lib version 2>/dev/null || echo '1.0.0')"
       - "echo \"Current version: $CURRENT_VERSION\""
       - "echo 'Syncing package.json to current version...'"
